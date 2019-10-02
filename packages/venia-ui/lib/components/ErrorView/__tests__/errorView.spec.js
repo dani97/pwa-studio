@@ -17,12 +17,6 @@ test('it renders the correct tree when page not found', () => {
     expect(tree).toMatchSnapshot();
 });
 
-test('it renders the correct tree when out of stock', () => {
-    const tree = renderer.render(<ErrorView outOfStock={true} />);
-
-    expect(tree).toMatchSnapshot();
-});
-
 test('it renders the internal error tree otherwise', () => {
     const tree = renderer.render(<ErrorView />);
 

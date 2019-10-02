@@ -1,11 +1,15 @@
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Query } from '@magento/venia-drivers';
 import { Title } from '../../components/Head';
-import ErrorView from '../../components/ErrorView';
+import ErrorView from './errorView';
 import { fullPageLoadingIndicator } from '../../components/LoadingIndicator';
 import ProductFullDetail from '../../components/ProductFullDetail';
 import getUrlKey from '../../util/getUrlKey';
 import productQuery from '../../queries/getProductDetail.graphql';
+import Icon from '../../components/Icon';
+import { AlertCircle as AlertCircleIcon } from 'react-feather';
+
+const ErrorIcon = <Icon src={AlertCircleIcon} attrs={{ width: 18 }} />;
 
 /**
  * As of this writing, there is no single Product query type in the M2.3 schema.
@@ -35,13 +39,22 @@ const Product = () => {
             variables={{ urlKey: getUrlKey(), onServer: false }}
         >
             {({ loading, error, data }) => {
+                const toastProps = {
+                    type: 'error',
+                    message: 'product out of stock',
+                    icon: ErrorIcon,
+                    timeout: 10000,
+                    onDismiss: remove => {
+                        remove();
+                    }
+                };
                 if (error) return <div>Data Fetch Error</div>;
                 if (loading) return fullPageLoadingIndicator;
 
                 const product = data.productDetail.items[0];
 
                 if (!product) {
-                    return <ErrorView outOfStock={true} />;
+                    return <ErrorView toastProps={toastProps} />;
                 }
 
                 return (
