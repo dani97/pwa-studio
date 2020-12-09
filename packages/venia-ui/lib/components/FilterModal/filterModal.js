@@ -13,7 +13,7 @@ import FilterBlock from './filterBlock';
 import FilterFooter from './filterFooter';
 import defaultClasses from './filterModal.css';
 
-import { tabbable } from 'tabbable';
+import {FocusScope, useFocusManager} from '@react-aria/focus'
 
 /**
  * A view that displays applicable and applied filters.
@@ -69,77 +69,53 @@ const FilterModal = props => {
         </div>
     ) : null;
 
-    function changeFocusOnModal(event) {
-        if (isOpen) {
-            event.target.focus();
-        }
-    }
-
     function handleKeyActions(event) {
         if (isOpen) {
             if (event.keyCode === 27) {
                 handleClose(event);
-            }
-            const element = modalRef.current;
-            const focusableEls = tabbable(element);
-            const firstFocusableEl = focusableEls[0];
-            const lastFocusableEl = focusableEls[focusableEls.length - 1];
-            if (event.keyCode === 9 || event.key === 'Tab') {
-                if (event.shiftKey) {
-                    /* shift + tab */
-                    if (document.activeElement === firstFocusableEl) {
-                        lastFocusableEl.focus();
-                        event.preventDefault();
-                    }
-                } /* tab */ else {
-                    if (document.activeElement === lastFocusableEl) {
-                        firstFocusableEl.focus();
-                        event.preventDefault();
-                    }
-                }
             }
         }
     }
 
     return (
         <Portal>
-            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-            <aside
-                className={modalClass}
-                tabIndex="-1"
-                ref={modalRef}
-                onKeyDown={handleKeyActions}
-                onTransitionEnd={changeFocusOnModal}
-                role="dialog"
-            >
-                <div className={classes.body}>
-                    <div className={classes.header}>
-                        <h2 className={classes.headerTitle}>
-                            <FormattedMessage
-                                id={'filterModal.headerTitle'}
-                                defaultMessage={'Filters'}
-                            />
-                        </h2>
-                        <button onClick={handleClose} aria-label="close">
-                            <Icon src={CloseIcon} />
-                        </button>
+            <FocusScope autoFocus restoreFocus contain>
+                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+                <aside
+                    className={modalClass}
+                    ref={modalRef}
+                    onKeyDown={handleKeyActions}
+                    role="dialog"
+                >
+                    <div className={classes.body}>
+                        <div className={classes.header}>
+                            <h2 className={classes.headerTitle}>
+                                <FormattedMessage
+                                    id={'filterModal.headerTitle'}
+                                    defaultMessage={'Filters'}
+                                />
+                            </h2>
+                            <button onClick={handleClose} aria-label="close">
+                                <Icon src={CloseIcon} />
+                            </button>
+                        </div>
+                        <CurrentFilters
+                            filterApi={filterApi}
+                            filterNames={filterNames}
+                            filterState={filterState}
+                        />
+                        {clearAll}
+                        <ul className={classes.blocks} aria-label="Filters">
+                            {filtersList}
+                        </ul>
                     </div>
-                    <CurrentFilters
-                        filterApi={filterApi}
-                        filterNames={filterNames}
-                        filterState={filterState}
+                    <FilterFooter
+                        applyFilters={handleApply}
+                        hasFilters={!!filterState.size}
+                        isOpen={isOpen}
                     />
-                    {clearAll}
-                    <ul className={classes.blocks} aria-label="Filters">
-                        {filtersList}
-                    </ul>
-                </div>
-                <FilterFooter
-                    applyFilters={handleApply}
-                    hasFilters={!!filterState.size}
-                    isOpen={isOpen}
-                />
-            </aside>
+                </aside>
+            </FocusScope>
         </Portal>
     );
 };

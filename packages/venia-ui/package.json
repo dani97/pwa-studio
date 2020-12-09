@@ -41,12 +41,12 @@
     "lodash.throttle": "~4.1.1",
     "memoize-one": "~5.0.0",
     "prop-types": "~15.7.2",
+    "react-aria": "~3.1.1",
     "react-feather": "~2.0.3",
     "react-helmet-async": "^1.0.2",
     "react-slick": "~0.25.2",
     "redux-actions": "~2.6.4",
     "redux-thunk": "~2.3.0",
-    "tabbable": "~5.1.2",
     "uuid": "~3.3.2"
   },
   "devDependencies": {
